@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <title>Student Logs</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <meta charset="UTF-8" />
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://img.icons8.com/fluency/240/jake.png"
+    />
+    <script src="to/prefers-dark.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  </head>
+  <body
+    class="
+      text-center
+      sm:text-left
+      bg-blue-200
+      border-solid border-2 border-black
+      m-12
+      p-3
+      dark:bg-green-200 dark:text-gray-200
+    "
+  >
+    <h1 class="text-2xl font-extrabold mb-5 dark:text-gray-400">
+      UVU Student Log
+    </h1>
+    <form onsubmit="submitNewLog()" onkeypress="return event.keyCode != 13">
+      <select
+        aria-label="Select Course"
+        id="course"
+        name="course"
+        oninput="hideInputBox()"
+        data-cy="course_select"
+        class="mb-5"
+      >
+        <option selected value="ChooseCourses">Choose Courses</option>
+        <option value="cs4690">CS 4690</option>
+        <option value="cs4660">CS 4660</option>
+        <option value="cs3380">CS 3380</option></select
+      ><br />
+      <div id="uvuIdTitleAndInput">
+        <label for="uvuId">UVU ID</label><br />
+        <input
+          type="number"
+          id="uvuId"
+          name="uvuId"
+          data-cy="uvuId_input"
+          onkeyup="vetInputData()"
+          oninput="this.value=this.value.slice(0,this.maxLength)"
+          maxlength="8"
+          placeholder="10234567"
+          class="mb-5"
+        />
+      </div>
+      <div id="inputPrompt" class="text-red-700 my-3"></div>
+
+      <h3 id="uvuIdDisplay" class="my-5" data-cy="uvuIdDisplay">
+        Student Logs for 10234567
+      </h3>
+      <div>
+        <ul data-cy="logs" id="uvuDisplayLogs"></ul>
+      </div>
+      <label>New Log</label><br />
+      <div>
+        <textarea
+          class="
+            block
+            px-2.5
+            w-full
+            text-sm text-gray-900
+            bg-gray-50
+            rounded-lg
+            border border-gray-300
+            focus:ring-blue-500 focus:border-blue-500
+          "
+          placeholder="Write your new log here..."
+          id="textareaLog"
+          style="height: 75px"
+          aria-label="add log textarea"
+          data-cy="log_textarea"
+          onkeyup="toggleButton()"
+        >
+        </textarea>
+      </div>
+      <br />
+
+      <button
+        type="submit"
+        id="submitButton"
+        style=""
+        class="
+          bg-gray-500
+          hover:bg-gray-700
+          text-white
+          font-bold
+          py-2
+          px-4
+          rounded
+        "
+      >
+        Add Log
+      </button>
+      <!-- TODO: Button should AJAX PUT the textarea value to json-server which will store it TALK -->
+    </form>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </body>
+  <!-- TODO: add appropriate comments you feel are necessary, if any, for the next coder to understand -->
+</html>
+
+<!-- TODO: move all TODOs that done above to down below here and change the label to DONE:. -->
+
+<!-- TODO: The following options are currently static values to show you sample data.  -->
+<!-- AJAX to replace them with dynamic data from GET https://json-server-ft3qa5--3000.local.webcontainer.io/api/v1/courses -->
+<!-- NOTE: all AJAX in this project is via fetch TALK-->
+<!-- Use your own unique URL you recorded, not the sample one above. -->
+
+<!-- TODO: Load the CSS file -->
+
+<!-- TODO: temporarily use stackoverflow's favicon. "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico"-->
+
+<!-- TODO: set the characterset to utf8 -->
+
+<!-- TODO: set the lang attribute to American English -->
+
+<!-- TODO: Don't show the uvu id text input box until a course was selected above. -->
+<!-- TODO: If course ever becomes unselected, don't show the uvu id text input box.-->
+
+<!-- TODO: Load the JS file -->
+
+<!-- TODO: The following options are currently static values to show you an example.  -->
+<!-- You must replace them with dynamic data by ajaxing GET https://json-server-ft3qa5--3000.local.webcontainer.io/logs?courseId=<courseID>&uvuId=<uvuID> -->
+
+<!-- TODO: Click anywhere on the log to toggle visibility of the log (text only, not the date) TALK -->
+
+<!-- TODO: write `10234567` as sample data on the input field below  -->
+<!-- TODO: Ensure the character length never exceeds 8 -->
+<!-- TODO: Only numbers, no letters or other characters-->
+<!-- TODO: When character length reaches 8 and it's only digits, fire off ajax request, if 200 or 304, display results, else appropriately guide the user. -->
+
+<!-- TODO: Button should be disabled until the logs, if any, are displayed and there's text in the textarea TALK -->
