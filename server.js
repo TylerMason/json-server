@@ -1,4 +1,6 @@
 const express = require('express');
+require('dotenv').config()
+const { MongoClient } = require("mongodb");
 
 
 const app = express();
@@ -6,6 +8,10 @@ const port = 3000;
 const fs = require('fs');
 
 // create application/json parser
+const uri = `mongodb+srv://${process.env.MONGOUSER}:${process.env.MONGOPASS}@mongopracticum.sayth8y.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri);
+const database = client.db('my_database');
+const logs = database.collection('logs');
 
 app.use(express.json());
 
@@ -90,8 +96,24 @@ app.delete('/api/v1/logs/:id', (req, res) => {
 });
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+const gracefulShutdown = async () => {
+  console.log('Shutting down the server gracefully...');
+  await client.close();
+  // Perform your custom actions here, e.g. close database connections, release resources, etc.
+
+  server.close(() => {
+    console.log('Server has been shut down gracefully.');
+    
+    process.exit(0);
+  });
+};
+
+// Listen for shutdown signals
+process.on('SIGINT', gracefulShutdown); // Catches 'ctrl+c' event
+process.on('SIGTERM', gracefulShutdown); // Catches 'kill' event
 
 app.use(express.static('public')); // apache, nginx
