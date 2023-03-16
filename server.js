@@ -12,28 +12,50 @@ const uri = `mongodb+srv://${process.env.MONGOUSER}:${process.env.MONGOPASS}@mon
 const client = new MongoClient(uri);
 const database = client.db('my_database');
 const logs = database.collection('logs');
+const courses = database.collection('courses');
 
 app.use(express.json());
 
 // gets all logs at a specific id
-app.get('/api/v1/logs/:id/:courseid', (req, res) => {
+app.get('/api/v1/logs/:id/:courseid', async (req, res) => {
   const uvuId = req.params.id;
   const courseId = req.params.courseid;
-  const data = fs.readFileSync('./db.json', 'utf-8');
-  const db = JSON.parse(data);
+  // const data = fs.readFileSync('./db.json', 'utf-8');
+  // const db = JSON.parse(data);
 
-  const logs = db.logs.filter((log) => log.uvuId === uvuId);
-  res.send(logs);
+  // const logs = db.logs.filter((log) => log.uvuId === uvuId);
+  // res.send(logs);
+  try {
+    const cursor = logs.find({ uvuId: uvuId, courseId: courseId });
+    const logsArray = await cursor.toArray();
+    if (logsArray.length > 0) {
+      res.send(logsArray);
+    } else {
+      res.status(404).send({ message: 'Logs not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching log:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
 });
 
 // gets all courses
-app.get('/api/v1/courses', (req, res) => {
-  const db = fs.readFileSync('./db.json', 'utf-8');
-  const data = JSON.parse(db);
-  const courses = data.courses.map((course) => course.display);
-  const uniqueCourses = [...new Set(courses)];
-
-  res.send(uniqueCourses);
+app.get('/api/v1/courses', async(req, res) => {
+  try {
+    const cursor = courses.find();
+    const coursesArray = await cursor.toArray();
+    if (coursesArray.length > 0) {
+      // get only the course string value that we want to display
+      const displayArray = coursesArray.map(item => item.display);
+      res.send(displayArray);
+    } else {
+      res.status(404).send({ message: 'Logs not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+  
 });
 
 // PUT method route
@@ -56,17 +78,17 @@ app.put('/api/v1/logs/:id', (req, res) => {
 });
 
 // POST method route
-app.post('/api/v1/logs', (req, res) => {
-  const uvuId = req.params;
+app.post('/api/v1/logs', async (req, res) => {
+  //const uvuId = req.params;
   const newLog = req.body;
 
-  const data = fs.readFileSync('./db.json', 'utf-8');
-  const db = JSON.parse(data);
-
-  db.logs.push({ uvuId, ...newLog });
-
-  fs.writeFileSync('./db.json', JSON.stringify(db));
-  res.send({ message: 'New log added successfully' });
+  try {
+    const result = await logs.insertOne(newLog);
+    res.status(201).send({ message: 'Log created', _id: result.insertedId });
+  } catch (error) {
+    console.error('Error inserting log:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
 });
 
 // DELETE method route
