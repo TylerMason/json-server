@@ -13,7 +13,8 @@ const logs_url = 'http://localhost:3000/api/v1/logs'
 const api_url = 'http://localhost:3000/api/v1/courses'
 
 var logDisplay = $('#uvuDisplayLogs');
-var textBox = $('#uvuId');
+var course = $('#course');
+var uvuId = $('#uvuId');
 var submitButton = $('#submitButton');
 var uvuIdDisplay = $('#uvuIdDisplay');
 var uvuTitle = $('#uvuIdTitleAndInput');
@@ -30,7 +31,7 @@ async function getapi(url) {
 }
 
 function populateOptions(data) {
-  var selector = $('#course');
+  var selector = course;
   selector.empty();
   var option = $('<option>', {
     value: 'ChooseCourses',
@@ -193,7 +194,9 @@ async function deleteLog(selected) {
       method: 'DELETE',
     });
 
-    const data = await response.json();
+  
+
+    const data = await response;
 
     console.log('Success:', data);
 
@@ -201,8 +204,9 @@ async function deleteLog(selected) {
   } catch (error) {
     console.error('Error:', error);
   }
+  
 
-  await getLogsFromId(courseId, uvuId);
+  vetInputData();
 }
 
 function editLog(element) {
@@ -268,6 +272,7 @@ async function updateLog(id, logData) {
 
   // Call any necessary functions after the update is complete
   // ...
+  vetInputData();
 }
 
 

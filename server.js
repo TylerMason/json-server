@@ -59,22 +59,38 @@ app.get('/api/v1/courses', async(req, res) => {
 });
 
 // PUT method route
-app.put('/api/v1/logs/:id', (req, res) => {
-  const id = req.params.id;
-  const newLog = req.body.log;
+app.put('/api/v1/logs/:id', async (req, res) => {
+  // const id = req.params.id;
+  // const newLog = req.body.log;
 
-  const data = fs.readFileSync('./db.json', 'utf-8');
-  const db = JSON.parse(data);
+  // const data = fs.readFileSync('./db.json', 'utf-8');
+  // const db = JSON.parse(data);
 
-  const oldLog = db.logs.find((log) => log.id === id);
+  // const oldLog = db.logs.find((log) => log.id === id);
 
-  // change in memeory right here i think
-  oldLog.date = newLog.date;
-  oldLog.text = newLog.text;
+  // // change in memeory right here i think
+  // oldLog.date = newLog.date;
+  // oldLog.text = newLog.text;
 
-  // with so many people hitting the server, we have to stop it until this is done.
-  fs.writeFile('./db.json', JSON.stringify(db, null, 2), () => {});
-  res.send("success");
+  // // with so many people hitting the server, we have to stop it until this is done.
+  // fs.writeFile('./db.json', JSON.stringify(db, null, 2), () => {});
+  // res.send("success");
+  try {
+    const id = req.params.id;
+    const newLog = req.body.log;
+    const newText = newLog.text;
+
+    const result = await logs.updateOne({ id: id}, {$set: newLog});
+
+    if (result.modifiedCount > 0) {
+      res.send('Log updated successfully');
+    } else {
+      res.status(404).send({ message: 'Log not found' });
+    }
+  } catch (error) {
+    console.error('Error updating log:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
 });
 
 // POST method route
@@ -92,28 +108,43 @@ app.post('/api/v1/logs', async (req, res) => {
 });
 
 // DELETE method route
-app.delete('/api/v1/logs/:id', (req, res) => {
+app.delete('/api/v1/logs/:id', async (req, res) => {
 
-  const data = fs.readFileSync('./db.json', 'utf-8');
-  const db = JSON.parse(data);
+  // const data = fs.readFileSync('./db.json', 'utf-8');
+  // const db = JSON.parse(data);
   
-  const id = req.params.id;
+  // const id = req.params.id;
 
-  // Find the index of the log to delete in the "logs" array
-  const logIndex = db.logs.findIndex((log) => log.id === id);
+  // // Find the index of the log to delete in the "logs" array
+  // const logIndex = db.logs.findIndex((log) => log.id === id);
 
-  // If the log with the specified ID is found, delete it from the "logs" array
-  if (logIndex !== -1) {
-    db.logs.splice(logIndex, 1);
+  // // If the log with the specified ID is found, delete it from the "logs" array
+  // if (logIndex !== -1) {
+  //   db.logs.splice(logIndex, 1);
 
-    // Write the updated database to disk
-    fs.writeFile('./db.json', JSON.stringify(db, null, 2), () => {});
+  //   // Write the updated database to disk
+  //   fs.writeFile('./db.json', JSON.stringify(db, null, 2), () => {});
 
-    // Send a success response to the client
-    res.sendStatus(204);
-  } else {
-    // If the log with the specified ID is not found, send a 404 error response
-    res.sendStatus(404);
+  //   // Send a success response to the client
+  //   res.sendStatus(204);
+  // } else {
+  //   // If the log with the specified ID is not found, send a 404 error response
+  //   res.sendStatus(404);
+  // }
+
+  try {
+    const id = req.params.id;
+
+    const result = await logs.deleteOne({ id: id });
+
+    if (result.deletedCount > 0) {
+      res.send('Log deleted successfully');
+    } else {
+      res.status(404).send({ message: 'Log not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting log:', error);
+    res.status(500).send({ message: 'Internal server error' });
   }
 });
 
